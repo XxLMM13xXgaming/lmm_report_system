@@ -1,7 +1,7 @@
 <p style="color:red">This directory is for sending emails from ingame! So not much is going on here... you can leave!</p>
 <?php
 
-	$type =  strip_tags($_POST["type"]);
+	$reporttype =  strip_tags($_POST["type"]);
 	$from =  strip_tags($_POST["from"]);
 	$thereason =  strip_tags($_POST["thereason"]);
 	$person =  strip_tags($_POST["reportonperson"]);
@@ -10,15 +10,14 @@
 	$reportid =  strip_tags($_POST["idreport"]);
 	$date =  strip_tags($_POST["thedate"]);
 	$host =  strip_tags($_POST["host"]);
-	
-	$to = strip_tags($_POST["sendto"]);
+	$emailto = strip_tags($_POST["sendto"]);
 	
 	$headers = "From: XxLMM13xX@gmail.com\r\n";
 	$headers .= "Reply-To: XxLMM13xX@gmail.com\r\n";
 	$headers .= "MIME-Version: 1.0\r\n";
 	$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 	
-	if($type=="Bug")
+	if($reporttype=="Bug")
 	{
 		$subject = 'Automated Bug Report From: ' . $from;
 
@@ -46,5 +45,5 @@
 		$message .= '<b>Server IP:</b> ' . $sip . ':' . $sport .'<br />';
 		$message .= "</body></html>";
 	}
-	mail($to, $subject, $message, $headers);
+	mail($emailto, $subject, $message, $headers);
 ?>
