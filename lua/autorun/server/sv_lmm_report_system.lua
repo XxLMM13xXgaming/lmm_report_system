@@ -1,3 +1,17 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- CONFIG --------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+LMMRSEmailConfig = {}
+LMMRSEmailConfig.UseEmailNotify = false -- Should you use email notify
+
+LMMRSEmailConfig.ReportPHPLocation = "http://yourwebsite.com/emailreport.php" -- ONLY IF LMMRSConfig.UseEmailNotify IS TRUE
+
+LMMRSEmailConfig.OwnersEmail = "your@website.com"
+
+LMMRSEmailConfig.EmailsToSend = {"your@website.com", "another@website.com"} -- ONLY IF LMMRSConfig.UseEmailNotify IS TRUE
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- CONFIG --------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------
 util.AddNetworkString("LMMRSSendReportMenu")
 util.AddNetworkString("LMMRSSendAdminMenu")
 util.AddNetworkString("LMMRSMarkRead")
@@ -185,7 +199,7 @@ net.Receive("LMMRSWriteReport", function(len, ply)
 	local Hour = os.date("%I")
 	local Min = os.date("%M")
 	local AMPM = os.date("%p")
-	
+	 
 	local date = Month.."/"..Day.."/"..Year.." - "..Hour..":"..Min.." "..AMPM
 	
 	if !file.Exists("lmm_reportsystem_data/"..reportid..".txt", "DATA") then
@@ -202,6 +216,24 @@ net.Receive("LMMRSWriteReport", function(len, ply)
 		net.WriteString(reportid)
 	net.Send(ply)
 	LMMRSAddToCooldown(ply)
+	
+	if LMMRSEmailConfig.UseEmailNotify then 		
+		for i=1, #LMMRSEmailConfig.EmailsToSend do
+			phptbl = {}
+			phptbl.sendto = LMMRSEmailConfig.EmailsToSend[i]
+			phptbl.type = typeorname
+			phptbl.reportonperson = reportOnNick.. "("..reportOnSteamID..")"
+			phptbl.thedate = date
+			phptbl.thereason = reason
+			phptbl.from = ply:Nick().."("..ply:SteamID()..")"
+			phptbl.idreport = reportid
+			phptbl.serverip = GetConVarString("ip")
+			phptbl.serverport = GetConVarString("hostport")
+			phptbl.host = GetConVarString("hostname")
+			phptbl.email = LMMRSEmailConfig.OwnersEmail		
+			http.Post( LMMRSEmailConfig.ReportPHPLocation, phptbl, function() print("Email report sent to: "..LMMRSEmailConfig.EmailsToSend[i]) end, function() MsgC(Color(255,0,0), "Email eport was not sent!\n") end )
+		end
+	end
 end)
 
 net.Receive("LMMRSRefresh", function(len, ply)
@@ -210,7 +242,7 @@ end)
 
 net.Receive("LMMRSDeleteReport", function(len, ply)
 	local thefile = net.ReadString()
-	
+	 
 	if !table.HasValue(LMMRSConfig.AdminGroups, ply:GetUserGroup()) then
 		LMMRSNotifyFuncton(ply, "You are not allowed!")
 		return
