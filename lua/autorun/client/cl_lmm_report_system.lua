@@ -1,10 +1,10 @@
 surface.CreateFont( "LMMRSfontclose", {
-		font = "Lato Light",
-		size = 25,
-		weight = 250,
-		antialias = true,
-		strikeout = false,
-		additive = true,
+	font = "Lato Light",
+	size = 25,
+	weight = 250,
+	antialias = true,
+	strikeout = false,
+	additive = true,
 } )
  
 surface.CreateFont( "LMMRSTitleFont", {
@@ -389,26 +389,57 @@ net.Receive("LMMRSSendReportMenu", function()
 		ReportSelect:AddChoice("Player Report")
 		ReportSelect.OnSelect = function( index, value, data )
 			if data == "Bug Report" then
-				Derma_StringRequest(
-				"Report System",
-				"Input the reason for the report",
-				"",
-				function( text ) 
+			
+				local TextEntry = vgui.Create( "DTextEntry", menu )	-- create the form as a child of frame
+				TextEntry:SetPos( 2, 80 )
+				TextEntry:SetSize( menu:GetWide() - 4, 120 )
+				TextEntry:SetText( "Enter bug report here..." )
+				TextEntry.OnEnter = function( self )
+
+				end					
+			
+				local SubmitButton = vgui.Create("DButton", menu)
+				SubmitButton:SetPos( 2, 210 )
+				SubmitButton:SetSize( menu:GetWide() - 4,20 )
+				SubmitButton:SetText("Submit Report")
+				SubmitButton:SetTextColor(Color(255,255,255))
+				SubmitButton.Paint = function( self, w, h )
+					DrawBlur(SubmitButton, 2)
+					drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
+					draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))	
+				end
+				SubmitButton.DoClick = function()							
+					local player = "Bug Report"
+					local reason = TextEntry:GetValue()
 					net.Start("LMMRSWriteReport")
-						net.WriteString("Bug")
-						net.WriteString(text)
+						net.WriteString(player)
+						net.WriteString(reason)
 					net.SendToServer()	
 					menu:Close()
 					menu:Remove()
 					gui.EnableScreenClicker( false )										
-				end,
-				function( text )
-					menu:Close()
-					menu:Remove()
-					gui.EnableScreenClicker( true )
-					MainMenu()										
-				end
-			 )
+				end					
+			
+--				Derma_StringRequest(
+--				"Report System",
+--				"Input the reason for the report",
+--				"",
+--				function( text ) 
+--					net.Start("LMMRSWriteReport")
+--						net.WriteString("Bug")
+--						net.WriteString(text)
+--					net.SendToServer()	
+--					menu:Close()
+--					menu:Remove()
+--					gui.EnableScreenClicker( false )										
+--				end,
+--				function( text )
+--					menu:Close()
+--					menu:Remove()
+--					gui.EnableScreenClicker( true )
+--					MainMenu()										
+--				end
+--			 )
 			else
 				local PlayerReport = vgui.Create("DComboBox", menu)
 				PlayerReport:SetPos(2, 80)
@@ -427,41 +458,29 @@ net.Receive("LMMRSSendReportMenu", function()
 					end
 					PlayerReasonReport:AddChoice("Other")
 					PlayerReasonReport.OnSelect = function( index, value, reason )
-						local SubmitButton = vgui.Create("DButton", menu)
-						SubmitButton:SetPos( 2, 210 )
-						SubmitButton:SetSize( menu:GetWide() - 4,20 )
-						SubmitButton:SetText("Submit Report")
-						SubmitButton:SetTextColor(Color(255,255,255))
-						SubmitButton.Paint = function( self, w, h )
-							DrawBlur(SubmitButton, 2)
-							drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
-							draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))	
-						end
-						SubmitButton.DoClick = function()							
+						if PlayerReasonReport:GetSelected() == "Other" then
 							local player = PlayerReport:GetSelected()
-							local reason = PlayerReasonReport:GetSelected()
-							if reason == "Other" then
-								Derma_StringRequest(
-									"Report System",
-									"Input the reason for the report",
-									"",
-									function( text ) 
-										net.Start("LMMRSWriteReport")
-											net.WriteString(player)
-											net.WriteString(text)
-										net.SendToServer()	
-										menu:Close()
-										menu:Remove()
-										gui.EnableScreenClicker( false )										
-									end,
-									function( text )
-										menu:Close()
-										menu:Remove()
-										gui.EnableScreenClicker( true )
-										MainMenu()										
-									end
-								 )
-							else
+							local TextEntry = vgui.Create( "DTextEntry", menu )	-- create the form as a child of frame
+							TextEntry:SetPos( 2, 140 )
+							TextEntry:SetSize( menu:GetWide() - 4, 60 )
+							TextEntry:SetText( "Enter reason here..." )
+							TextEntry.OnEnter = function( self )
+								
+							end					
+
+							local SubmitButton = vgui.Create("DButton", menu)
+							SubmitButton:SetPos( 2, 210 )
+							SubmitButton:SetSize( menu:GetWide() - 4,20 )
+							SubmitButton:SetText("Submit Report")
+							SubmitButton:SetTextColor(Color(255,255,255))
+							SubmitButton.Paint = function( self, w, h )
+								DrawBlur(SubmitButton, 2)
+								drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
+								draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))	
+							end
+							SubmitButton.DoClick = function()							
+								local player = PlayerReport:GetSelected()
+								local reason = TextEntry:GetValue()
 								net.Start("LMMRSWriteReport")
 									net.WriteString(player)
 									net.WriteString(reason)
@@ -469,8 +488,32 @@ net.Receive("LMMRSSendReportMenu", function()
 								menu:Close()
 								menu:Remove()
 								gui.EnableScreenClicker(false)
+							end								
+							
+						else
+						
+							local SubmitButton = vgui.Create("DButton", menu)
+							SubmitButton:SetPos( 2, 210 )
+							SubmitButton:SetSize( menu:GetWide() - 4,20 )
+							SubmitButton:SetText("Submit Report")
+							SubmitButton:SetTextColor(Color(255,255,255))
+							SubmitButton.Paint = function( self, w, h )
+								DrawBlur(SubmitButton, 2)
+								drawRectOutline( 0, 0, w, h, Color( 0, 0, 0, 85 ) )	
+								draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 125))	
 							end
-						end						
+							SubmitButton.DoClick = function()							
+								local player = PlayerReport:GetSelected()
+								local reason = PlayerReasonReport:GetSelected()
+								net.Start("LMMRSWriteReport")
+									net.WriteString(player)
+									net.WriteString(reason)
+								net.SendToServer()
+								menu:Close()
+								menu:Remove()
+								gui.EnableScreenClicker(false)
+							end						
+						end
 					end
 				end
 			end
