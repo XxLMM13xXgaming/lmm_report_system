@@ -1,3 +1,5 @@
+--WEBSITE FEATURE CURRENTLY DOWN
+/*
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- CONFIG --------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -12,6 +14,8 @@ LMMRSEmailConfig.EmailsToSend = {"your@website.com", "another@website.com"} -- O
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- CONFIG --------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+*/
+
 util.AddNetworkString("LMMRSSendReportMenu")
 util.AddNetworkString("LMMRSSendAdminMenu")
 util.AddNetworkString("LMMRSMarkRead")
@@ -96,7 +100,7 @@ local function LMMRSOpenMenuF(ply)
 				table.insert(playerreports, {string.StripExtension(v)})				
 			end
 		end	
-	
+	 
 		net.Start("LMMRSSendReportMenu")
 			net.WriteTable(playerreports)
 		net.Send(ply)
@@ -217,23 +221,23 @@ net.Receive("LMMRSWriteReport", function(len, ply)
 	net.Send(ply)
 	LMMRSAddToCooldown(ply)
 	
-	if LMMRSEmailConfig.UseEmailNotify then 		
-		for i=1, #LMMRSEmailConfig.EmailsToSend do
-			phptbl = {}
-			phptbl.sendto = LMMRSEmailConfig.EmailsToSend[i]
-			phptbl.type = typeorname
-			phptbl.reportonperson = reportOnNick.. "("..reportOnSteamID..")"
-			phptbl.thedate = date
-			phptbl.thereason = reason
-			phptbl.from = ply:Nick().."("..ply:SteamID()..")"
-			phptbl.idreport = reportid
-			phptbl.serverip = GetConVarString("ip")
-			phptbl.serverport = GetConVarString("hostport")
-			phptbl.host = GetConVarString("hostname")
-			phptbl.email = LMMRSEmailConfig.OwnersEmail		
-			http.Post( LMMRSEmailConfig.ReportPHPLocation, phptbl, function() print("Email report sent to: "..LMMRSEmailConfig.EmailsToSend[i]) end, function() MsgC(Color(255,0,0), "Email eport was not sent!\n") end )
-		end
-	end
+--	if LMMRSEmailConfig.UseEmailNotify then 		
+--		for i=1, #LMMRSEmailConfig.EmailsToSend do
+--			phptbl = {}
+--			phptbl.sendto = LMMRSEmailConfig.EmailsToSend[i]
+--			phptbl.type = typeorname
+--			phptbl.reportonperson = reportOnNick.. "("..reportOnSteamID..")"
+--			phptbl.thedate = date
+--			phptbl.thereason = reason
+--			phptbl.from = ply:Nick().."("..ply:SteamID()..")"
+--			phptbl.idreport = reportid
+--			phptbl.serverip = GetConVarString("ip")
+--			phptbl.serverport = GetConVarString("hostport")
+--			phptbl.host = GetConVarString("hostname")
+--			phptbl.email = LMMRSEmailConfig.OwnersEmail		
+--			http.Post( LMMRSEmailConfig.ReportPHPLocation, phptbl, function() print("Email report sent to: "..LMMRSEmailConfig.EmailsToSend[i]) end, function() MsgC(Color(255,0,0), "Email eport was not sent!\n") end )
+--		end
+--	end
 end)
 
 net.Receive("LMMRSRefresh", function(len, ply)
